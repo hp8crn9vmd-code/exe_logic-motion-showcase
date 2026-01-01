@@ -4,16 +4,38 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>exe_logic Motion Showcase</title>
-  <script type="module" crossorigin src="/exe_logic-motion-showcase/assets/index-DuBmWpds.js"></script>
-  <link rel="stylesheet" crossorigin href="/exe_logic-motion-showcase/assets/index-Dl8j-Dk-.css">
+  <script type="module" crossorigin src="/exe_logic-motion-showcase/assets/index-CX4AqnVN.js"></script>
+  <link rel="stylesheet" crossorigin href="/exe_logic-motion-showcase/assets/index-C6F9IqJa.css">
 </head>
 <body class="bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100 min-h-screen">
     <div id="app" class="container mx-auto px-4 py-8">
         <header class="mb-12">
-            <h1 class="text-4xl font-bold tracking-tighter">exe_logic Motion Showcase</h1>
-            <p class="mt-2 text-gray-600 dark:text-gray-400">A 100% code-generated 2D motion showcase with Swiss design aesthetics</p>
+            <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+                <div>
+                    <h1 class="text-4xl font-bold tracking-tighter">exe_logic Motion Showcase</h1>
+                    <p class="mt-2 text-gray-600 dark:text-gray-400">A 100% code-generated 2D motion showcase with Swiss design aesthetics</p>
+                </div>
+                <div class="flex gap-3">
+                    <button id="theme-toggle" class="focus-ring px-4 py-2 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
+                        <span class="flex items-center gap-2">
+                            <span id="theme-icon">🌙</span>
+                            <span id="theme-text">Toggle Theme</span>
+                        </span>
+                    </button>
+                    <button id="motion-toggle" class="focus-ring px-4 py-2 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
+                        <span class="flex items-center gap-2">
+                            <span id="motion-icon">⚡</span>
+                            <span id="motion-text">Toggle Motion</span>
+                        </span>
+                    </button>
+                </div>
+            </div>
         </header>
         <main id="gallery-container"></main>
+        <footer class="mt-12 pt-8 border-t border-gray-200 dark:border-gray-800 text-center text-gray-500 dark:text-gray-400 text-sm">
+            <p>Use Tab to navigate • Press Enter/Space to activate buttons • Press Escape to dismiss modals</p>
+            <p class="mt-2">Accessibility compliant • WCAG 2.1 AA • Reduced motion support</p>
+        </footer>
     </div>
 </body>
 </html>
