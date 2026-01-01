@@ -1,0 +1,76 @@
+#!/bin/bash
+set -e
+
+echo "Starting production verification..."
+
+# Install dependencies
+npm ci
+
+# TypeScript compilation
+npm run type-check || { echo "✗ TypeScript compilation failed"; exit 1; }
+echo "✓ TypeScript compilation passed"
+
+# CSS syntax validation
+npx stylelint "src/**/*.css" || { echo "✗ CSS syntax validation failed"; exit 1; }
+echo "✓ CSS syntax validation passed"
+
+# Linting
+npm run lint || echo "△ Lint warnings (non-fatal)"
+
+# Unit tests
+npm test || { echo "✗ Unit tests failed"; exit 1; }
+echo "✓ Unit tests passed"
+
+# Security audit
+npm audit --audit-level=moderate || echo "△ Security warnings (non-fatal)"
+
+# Build
+npm run build || { echo "✗ Build failed"; exit 1; }
+echo "✓ Build successful"
+
+# Module count verification
+MODULE_COUNT=$(grep -r "registerModule" src/lib/gallery.ts | wc -l)
+if [ $MODULE_COUNT -eq 10 ]; then
+    echo "✓ 10 modules registered"
+else
+    echo "✗ Module count mismatch: $MODULE_COUNT"
+    exit 1
+fi
+
+# Inline style verification (must be zero)
+INLINE_STYLES=$(grep -r 'style="' src/ --include="*.ts" --include="*.tsx" | wc -l)
+if [ $INLINE_STYLES -eq 0 ]; then
+    echo "✓ No inline styles found"
+else
+    echo "✗ Found $INLINE_STYLES inline style attributes"
+    exit 1
+fi
+
+# Style injection verification (must be zero)
+STYLE_INJECTION=$(grep -r "createElement.*style" src/ --include="*.ts" --include="*.tsx" | wc -l)
+if [ $STYLE_INJECTION -eq 0 ]; then
+    echo "✓ No runtime style injection"
+else
+    echo "✗ Found $STYLE_INJECTION style injections"
+    exit 1
+fi
+
+# CSP compliance check
+INLINE_SCRIPTS=$(grep -r "<script>" src/ --include="*.ts" --include="*.tsx" --include="*.html" | wc -l)
+if [ $INLINE_SCRIPTS -eq 0 ]; then
+    echo "✓ No inline scripts found"
+else
+    echo "✗ Found $INLINE_SCRIPTS inline script tags"
+    exit 1
+fi
+
+# Global document query check in modules (must be zero for play/pause)
+GLOBAL_QUERIES=$(grep -r "document.querySelector" src/lib/modules/ --include="*.ts" | grep -v "test" | wc -l)
+if [ $GLOBAL_QUERIES -eq 0 ]; then
+    echo "✓ No global document queries in modules"
+else
+    echo "✗ Found $GLOBAL_QUERIES global document queries in modules"
+    exit 1
+fi
+
+echo "✓ All checks passed! Production ready."
