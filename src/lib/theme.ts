@@ -94,9 +94,25 @@ export class ThemeManager {
 
         this.applyTheme();
         this.notifyThemeChange();
+        this.themeMode = 'user';
+        this.currentTheme = this.currentTheme === 'light' ? 'dark' : 'light';
+
+        localStorage.setItem('theme-mode', 'user');
+        localStorage.setItem('theme', this.currentTheme);
+
+        this.applyTheme();
+        this.notifyThemeChange();
     }
 
     toggleMotion(): void {
+        this.motionMode = 'user';
+        this.currentMotion = !this.currentMotion;
+
+        localStorage.setItem('motion-mode', 'user');
+        localStorage.setItem('motion', this.currentMotion ? 'reduced' : 'normal');
+
+        this.applyMotionPreference();
+        this.notifyMotionChange();
         this.motionMode = 'user';
         this.currentMotion = !this.currentMotion;
 

@@ -3,6 +3,8 @@ import { test, expect } from '@playwright/test';
 test.describe('Motion Showcase', () => {
     test.beforeEach(async ({ page }) => {
         await page.goto('/');
+        // انتظار تحميل التطبيق
+        await page.waitForSelector('[data-module]', { timeout: 10000 });
     });
 
     test('should load all 10 modules', async ({ page }) => {
@@ -15,31 +17,59 @@ test.describe('Motion Showcase', () => {
             document.documentElement.classList.contains('dark')
         );
 
-        await page.click('button:has-text("Toggle Theme")');
+        await page.click('#theme-toggle');
         const newTheme = await page.evaluate(() =>
             document.documentElement.classList.contains('dark')
         );
 
         expect(newTheme).not.toBe(initialTheme);
+        
+        // التحقق من تحديث نص الزر
+        const buttonText = await page.textContent('#theme-text');
+        expect(buttonText).toBe(initialTheme ? 'Light Mode' : 'Dark Mode');
     });
 
     test('should respect reduced motion preference', async ({ page }) => {
-        await page.click('button:has-text("Toggle Motion")');
-
-        const hasMotionDisabled = await page.evaluate(() =>
+        const initialMotionDisabled = await page.evaluate(() =>
+            document.documentElement.classList.contains('motion-disabled')
+        );
+        
+        await page.click('#motion-toggle');
+        
+        const newMotionDisabled = await page.evaluate(() =>
             document.documentElement.classList.contains('motion-disabled')
         );
 
-        expect(hasMotionDisabled).toBe(true);
+        expect(newMotionDisabled).not.toBe(initialMotionDisabled);
+        
+        // التحقق من تحديث نص الزر
+        const buttonText = await page.textContent('#motion-text');
+        expect(buttonText).toBe(initialMotionDisabled ? 'Normal Motion' : 'Reduced Motion');
     });
 
     test('should have keyboard navigation', async ({ page }) => {
-        await page.keyboard.press('Tab');
-
+        // التركيز على أول زر
+        await page.focus('#theme-toggle');
+        
         const focusedElement = await page.evaluate(() =>
-            document.activeElement?.tagName
+            document.activeElement?.id
         );
 
-        expect(['BUTTON', 'A', 'INPUT'].includes(focusedElement || '')).toBe(true);
+        // يجب أن يكون التركيز على زر الثيم
+        expect(focusedElement).toBe('theme-toggle');
+        
+        // التنقل بين الأزرار باستخدام Tab
+        await page.keyboard.press('Tab');
+        const secondFocusedElement = await page.evaluate(() =>
+            document.activeElement?.id
+        );
+        expect(secondFocusedElement).toBe('motion-toggle');
+        
+        // تفعيل الزر باستخدام Space
+        await page.keyboard.press('Space');
+        const motionDisabled = await page.evaluate(() =>
+            document.documentElement.classList.contains('motion-disabled')
+        );
+        expect(motionDisabled).toBe(true);
     });
 });
